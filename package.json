@@ -1,12 +1,12 @@
 {
   "name": "trace-coordinator",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "bin/index.js",
   "license": "Apache License 2.0",
   "scripts": {
     "build": "tsc",
-    "start": "node ./bin/app.js",
-    "dev": "ts-node-dev ./src/app.ts",
+    "start": "NODE_PATH=bin node bin/index.js",
+    "dev": "NODE_PATH=src ts-node-dev src/index.ts",
     "lint": "eslint '*/**/*.{js,ts}' --quiet --fix"
   },
   "husky": {
@@ -22,6 +22,7 @@
   "dependencies": {
     "@types/node": "^14.14.37",
     "fastify": "^3.14.2",
+    "tsp-typescript-client": "^0.1.0",
     "typescript": "^4.2.4"
   },
   "devDependencies": {
