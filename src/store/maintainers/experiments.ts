@@ -1,9 +1,8 @@
 import { Experiment } from "tsp-typescript-client";
-import { UpdateType } from "store/UpdateType";
 import { Maintainer } from "store";
 
 export const separated_experiments: Maintainer = {
-    [UpdateType.EXPERIMENTS]: (state, data: { address: string; experiments: Experiment[] }) => {
+    EXPERIMENTS: (state, data: { address: string; experiments: Experiment[] }) => {
         const new_state = { ...state };
         for (const experiment of data.experiments) {
             if (!new_state.separated.experiments[experiment.UUID])
@@ -15,7 +14,7 @@ export const separated_experiments: Maintainer = {
 };
 
 export const separated_experiment: Maintainer = {
-    [UpdateType.EXPERIMENT]: (state, data: { address: string; experiment: Experiment }) => {
+    EXPERIMENT: (state, data: { address: string; experiment: Experiment }) => {
         const new_state = { ...state };
         if (!new_state.separated.experiments[data.experiment.UUID])
             new_state.separated.experiments[data.experiment.UUID] = {};
@@ -25,7 +24,7 @@ export const separated_experiment: Maintainer = {
 };
 
 export const aggregated_experiments: Maintainer = {
-    [UpdateType.AGGREGATE_EXPERIMENTS]: (state) => {
+    AGGREGATE_EXPERIMENTS: (state) => {
         const new_state = { ...state };
         new_state.aggregated.experiments = {};
         for (const uuid in new_state.separated.experiments) {

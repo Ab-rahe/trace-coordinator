@@ -26,8 +26,7 @@ export class MaintainerManager<T, V extends string | number> {
 
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
     public dispatch(type: V, data?: any): void {
-        let maintainers = this._maintainers[type];
-        if (!maintainers) maintainers = [];
+        const maintainers = type !== `preware` ? this._maintainers[type] || [] : [];
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         for (const maintainer of [...this._maintainers.preware!, ...maintainers]) {
             const new_state = maintainer(this._store.getState(), data, type);

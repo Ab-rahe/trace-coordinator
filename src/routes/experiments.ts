@@ -2,7 +2,6 @@ import { FastifyPluginCallback } from "fastify";
 import { trace_coordinator } from "core/TraceCoordinator";
 import { maintainer_manager, store } from "store";
 import { separated_experiments } from "store/maintainers";
-import { UpdateType } from "store/UpdateType";
 import { fetchExperiments } from "./mock/fetch";
 
 export const experiments: FastifyPluginCallback = (fastify, _opts_, done) => {
@@ -12,10 +11,10 @@ export const experiments: FastifyPluginCallback = (fastify, _opts_, done) => {
             // const response = await trace_server.fetchExperiments();
             const response = fetchExperiments();
             if (response.isOk()) {
-                maintainer_manager.dispatch(UpdateType.EXPERIMENTS, { address, experiments: response.getModel() });
+                maintainer_manager.dispatch(`EXPERIMENTS`, { address, experiments: response.getModel() });
             }
         }
-        maintainer_manager.dispatch(UpdateType.AGGREGATE_EXPERIMENTS);
+        maintainer_manager.dispatch(`AGGREGATE_EXPERIMENTS`);
         return store.getState().aggregated.experiments;
     });
     done();
