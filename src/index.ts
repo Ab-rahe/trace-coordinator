@@ -6,22 +6,28 @@ process.on(`unhandledRejection`, (reason, promise) => {
 import Fastify, { FastifyInstance } from "fastify";
 import traservers_config from "configs/traceservers.config";
 import { trace_coordinator } from "core/TraceCoordinator";
-import {
-    controller as controllerRoute,
-    experiments as experimentsRoute,
-    experiment as experimentRoute,
-    home,
-} from "routes";
-import { maintainer_manager } from "store";
-import { aggregated_experiments } from "store/maintainers";
+import { controllerRoute, experimentsRoute, experimentRoute, outputsRoute } from "routes";
 import "lib/OverloadedObject";
 
 const server: FastifyInstance = Fastify({});
-server.register(home);
+
+// For debug purpose, save all state to state.json
+import fs from "fs";
+import { store } from "store";
+server.get(`/debug`, async () => {
+    fs.writeFile(`state.json`, JSON.stringify({ state: store.getState(), history: store.getHistory() }), (err) => {
+        if (err) {
+            throw err;
+        }
+        console.log(`State are saved.`);
+    });
+});
+//////////////////////////////////////////////////
+
 server.register(controllerRoute);
 server.register(experimentsRoute);
 server.register(experimentRoute);
-maintainer_manager.register(aggregated_experiments);
+server.register(outputsRoute);
 
 (async () => {
     try {

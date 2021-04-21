@@ -1,27 +1,35 @@
-import { Experiment } from "tsp-typescript-client";
+import {
+    Experiment,
+    OutputDescriptor,
+    GenericResponse,
+    EntryModel,
+    EntryHeader,
+    TimeGraphEntry,
+} from "tsp-typescript-client";
 
+// TODO: Fill issue TS, mapped types allow empty object, but not keyed type
+export type StateTimegraph = GenericResponse<EntryModel<TimeGraphEntry, EntryHeader>>;
+export type StateExperiment = {
+    experiment?: Experiment;
+    outputs?: OutputDescriptor[];
+    timegraph?: {
+        [id: string]: StateTimegraph;
+    };
+};
 type State = {
     readonly aggregated: {
-        experiments: {
-            [uuid: string]: Experiment;
-        };
+        [uuid: string]: StateExperiment;
     };
     readonly separated: {
-        readonly experiments: {
-            [uuid: string]: {
-                [addresss: string]: Experiment;
-            };
+        [uuid: string]: {
+            [addresss: string]: StateExperiment;
         };
     };
 };
 
 const state: State = {
-    aggregated: {
-        experiments: {},
-    },
-    separated: {
-        experiments: {},
-    },
+    aggregated: {},
+    separated: {},
 };
 
 export default state;

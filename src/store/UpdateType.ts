@@ -1,1 +1,9 @@
-export type UpdateType = `EXPERIMENTS` | `EXPERIMENT` | `AGGREGATE_EXPERIMENTS`;
+export type UpdateType =
+    | `EXPERIMENTS`
+    | `EXPERIMENT`
+    | `AGGREGATE_EXPERIMENTS`
+    | `AGGREGATE_EXPERIMENT`
+    | `OUTPUTS`
+    | `AGGREGATE_OUTPUTS`
+    | `TIMEGRAPH`
+    | `AGGREGATE_TIMEGRAPH`;
