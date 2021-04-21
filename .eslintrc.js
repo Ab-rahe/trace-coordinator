@@ -28,7 +28,6 @@ module.exports = {
         // See https://github.com/typescript-eslint/typescript-eslint/blob/master/packages/eslint-plugin/docs/rules/naming-convention.md
         "@typescript-eslint/naming-convention": [
             "error",
-            { selector: "variableLike", format: ["camelCase"] },
             {
                 selector: "variable",
                 format: ["snake_case"],
