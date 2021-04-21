@@ -6,7 +6,7 @@ process.on(`unhandledRejection`, (reason, promise) => {
 import Fastify, { FastifyInstance } from "fastify";
 import traservers_config from "configs/traceservers.config";
 import { trace_coordinator } from "core/TraceCoordinator";
-import { controllerRoute, experimentsRoute, experimentRoute, outputsRoute } from "routes";
+import { controllerRoute, experimentsRoute, experimentRoute, outputsRoute, timegraphRoute } from "routes";
 import "lib/OverloadedObject";
 
 const server: FastifyInstance = Fastify({});
@@ -28,7 +28,9 @@ server.register(controllerRoute);
 server.register(experimentsRoute);
 server.register(experimentRoute);
 server.register(outputsRoute);
+server.register(timegraphRoute);
 
+// start server
 (async () => {
     try {
         await server.listen(3000, `0.0.0.0`);
