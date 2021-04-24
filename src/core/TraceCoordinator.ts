@@ -38,7 +38,7 @@ class TraceCoordinator {
         for (const [address, trace_server] of this.getServers()) {
             const experiments_response = await trace_server.fetchExperiments();
             // const experiments_response = fetchExperiments();
-            if (experiments_response.isOk())
+            if (!experiments_response.isOk())
                 throw new RestError(experiments_response.getStatusCode(), experiments_response.getStatusMessage());
             const experiments = experiments_response.getModel() as Experiment[];
             result.push({ address, experiments });
@@ -63,7 +63,7 @@ class TraceCoordinator {
         const result = [];
         for (const [address, trace_server] of this.getServers()) {
             const outputs_reponse = await trace_server.experimentOutputs(uuid);
-            if (outputs_reponse.isOk())
+            if (!outputs_reponse.isOk())
                 throw new RestError(outputs_reponse.getStatusCode(), outputs_reponse.getStatusMessage());
             result.push({ exp_uuid: uuid, address, outputs: outputs_reponse.getModel() });
         }
@@ -78,7 +78,7 @@ class TraceCoordinator {
                 output_id,
                 QueryHelper.timeQuery(requested_times),
             );
-            if (timegraph_reponse.isOk())
+            if (!timegraph_reponse.isOk())
                 throw new RestError(timegraph_reponse.getStatusCode(), timegraph_reponse.getStatusMessage());
             result.push({ exp_uuid, address, output_id, outputs: timegraph_reponse.getModel() });
         }

@@ -4,7 +4,7 @@
   "main": "bin/index.js",
   "license": "Apache License 2.0",
   "scripts": {
-    "build": "tsc",
+    "build": "rimraf bin && tsc",
     "start": "NODE_PATH=bin node bin/index.js",
     "dev": "NODE_PATH=src ts-node-dev src/index.ts",
     "lint": "eslint '*/**/*.{js,ts}' --quiet --fix"
@@ -34,6 +34,7 @@
     "husky": "^6.0.0",
     "lint-staged": "^10.5.4",
     "prettier": "^2.2.1",
+    "rimraf": "^3.0.2",
     "ts-node-dev": "^1.1.6"
   }
 }
