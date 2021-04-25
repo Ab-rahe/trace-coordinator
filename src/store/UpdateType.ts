@@ -6,4 +6,8 @@ export type UpdateType =
     | `OUTPUTS`
     | `AGGREGATE_OUTPUTS`
     | `TIMEGRAPH`
-    | `AGGREGATE_TIMEGRAPH`;
+    | `AGGREGATE_TIMEGRAPH`
+    | `XYTREE`
+    | `AGGREGATE_XYTREE`
+    | `DATATREE`
+    | `AGGREGATE_DATATREE`;

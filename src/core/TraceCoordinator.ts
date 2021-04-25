@@ -1,7 +1,7 @@
 import { OutputDescriptor, TspClient, Experiment, QueryHelper, Query } from "tsp-typescript-client";
 import { TspClientFactory } from "./TspClientFactory";
 import { RestError } from "lib/RestError";
-import { StateTimegraph } from "configs/state.default";
+import { StateTimegraph, StateXyTree, StateDataTree } from "configs/state.default";
 
 class TraceCoordinator {
     private readonly _trace_servers: { [adddress: string]: TspClient };
@@ -113,6 +113,45 @@ class TraceCoordinator {
         }
         return result;
     }
+
+    public async fetchXYTree(exp_uuid: string, output_id: string, requested_times: number[]) {
+        const result = {
+            exp_uuid,
+            output_id,
+            downloads: [] as { address: string; xytree: StateXyTree }[],
+        }
+        for (const [address, trace_server] of Object.entries(this.getServers())) {
+            const xytree_reponse = await trace_server.fetchXYTree(
+                exp_uuid,
+                output_id,
+                QueryHelper.timeQuery(requested_times),
+            );
+            if (!xytree_reponse.isOk())
+                throw new RestError(xytree_reponse.getStatusCode(), xytree_reponse.getStatusMessage());
+                result.downloads.push({ address, xytree: xytree_reponse.getModel() });
+            }
+        return result;
+    }
+
+    public async fetchDataTree(exp_uuid: string, output_id: string, requested_times: number[]) {
+        const result = {
+            exp_uuid,
+            output_id,
+            downloads: [] as { address: string; datatree: StateDataTree }[],
+        };
+        for (const [address, trace_server] of Object.entries(this.getServers())) {
+            const datatree_reponse = await trace_server.fetchDataTree(
+                exp_uuid,
+                output_id,
+                QueryHelper.timeQuery(requested_times),
+            );
+            if (!datatree_reponse.isOk())
+                throw new RestError(datatree_reponse.getStatusCode(), datatree_reponse.getStatusMessage());
+            result.downloads.push({ address, datatree: datatree_reponse.getModel() });
+        }
+        return result;
+    }
+
 }
 
 export const trace_coordinator = TraceCoordinator.getInstance();
