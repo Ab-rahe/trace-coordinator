@@ -4,16 +4,17 @@ import { Maintainer } from "store";
 //TODO: handle data parsing errors
 
 export const separated_ouputs_maintainer: Maintainer = {
-    OUTPUTS: (state, data: { exp_uuid: string; address: string; outputs: OutputDescriptor[] }) => {
+    OUTPUTS: (state, data: { exp_uuid: string; downloads: { address: string; outputs: OutputDescriptor[] }[] }) => {
         const new_state = { ...state };
-        new_state.separated[data.exp_uuid][data.address].outputs = data.outputs;
+        for (const download of data.downloads) {
+            new_state.separated[data.exp_uuid][download.address].outputs = download.outputs;
+        }
         return new_state;
     },
 };
 
 export const aggregated_ouputs_maintainer: Maintainer = {
     AGGREGATE_OUTPUTS: (state, exp_uuid: string) => {
-        if (!state.aggregated[exp_uuid]) return state;
         const new_state = { ...state };
         new_state.aggregated[exp_uuid].outputs = [
             ...new Set(

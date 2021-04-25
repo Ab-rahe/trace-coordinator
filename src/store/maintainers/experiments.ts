@@ -1,18 +1,21 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Maintainer } from "store";
 import { Experiment } from "tsp-typescript-client";
+import { StateExperiment } from "configs/state.default";
 
 //TODO: handle data parsing errors
 
 export const separated_experiments_maintainer: Maintainer = {
-    EXPERIMENTS: (state, data: { address: string; experiments: Experiment[] }) => {
+    EXPERIMENTS: (state, data: { downloads: { address: string; experiments: Experiment[] }[] }) => {
         const new_state = { ...state };
-        for (const experiment of data.experiments) {
-            if (!new_state.separated[experiment.UUID]) new_state.separated.experiments[experiment.UUID] = {};
-            if (!new_state.separated[experiment.UUID][data.address])
-                new_state.separated[experiment.UUID][data.address] = {};
-            new_state.separated[experiment.UUID][data.address].experiment = experiment;
+        const x: { [exp_uuid: string]: { [address: string]: StateExperiment } } = {};
+        for (const download of data.downloads) {
+            for (const experiment of download.experiments) {
+                if (!x[experiment.UUID]) x[experiment.UUID] = {};
+                x[experiment.UUID][download.address] = {};
+                x[experiment.UUID][download.address].experiment = experiment;
+            }
         }
+        new_state.separated = x;
         return new_state;
     },
 };
@@ -20,11 +23,11 @@ export const separated_experiments_maintainer: Maintainer = {
 export const aggregated_experiments_maintainer: Maintainer = {
     AGGREGATE_EXPERIMENTS: (state) => {
         const new_state = { ...state };
-        new_state.aggregated.experiments = {};
-        for (const uuid in new_state.separated) {
-            if (!new_state.aggregated[uuid]) new_state.aggregated[uuid] = {};
-            new_state.aggregated[uuid].experiment = {
-                UUID: uuid,
+        new_state.aggregated = {};
+        for (const exp_uuid in new_state.separated) {
+            new_state.aggregated[exp_uuid] = {};
+            new_state.aggregated[exp_uuid].experiment = {
+                UUID: exp_uuid,
                 name: ``,
                 start: Number.MIN_VALUE,
                 end: Number.MAX_VALUE,
@@ -32,16 +35,16 @@ export const aggregated_experiments_maintainer: Maintainer = {
                 indexingStatus: `COMPLETED`,
                 traces: [],
             };
-            for (const separated_state_experiment of Object.values(new_state.separated[uuid])) {
-                new_state.aggregated[uuid].experiment!.name = separated_state_experiment.experiment!.name;
-                if (separated_state_experiment.experiment!.start < new_state.aggregated[uuid].experiment!.start)
-                    new_state.aggregated[uuid].experiment!.start = separated_state_experiment.experiment!.start;
-                if (separated_state_experiment.experiment!.end > new_state.aggregated[uuid].experiment!.end)
-                    new_state.aggregated[uuid].experiment!.end = separated_state_experiment.experiment!.end;
-                new_state.aggregated[uuid].experiment!.nbEvents += separated_state_experiment.experiment!.nbEvents;
-                if (separated_state_experiment.experiment!.indexingStatus === `RUNNING`)
-                    new_state.aggregated[uuid].experiment!.indexingStatus = `RUNNING`;
-                new_state.aggregated[uuid].experiment!.traces.concat(separated_state_experiment.experiment!.traces);
+            for (const { experiment } of Object.values(new_state.separated[exp_uuid])) {
+                new_state.aggregated[exp_uuid].experiment!.name = experiment!.name;
+                if (new_state.aggregated[exp_uuid].experiment!.start > experiment!.start)
+                    new_state.aggregated[exp_uuid].experiment!.start = experiment!.start;
+                if (new_state.aggregated[exp_uuid].experiment!.end < experiment!.end)
+                    new_state.aggregated[exp_uuid].experiment!.end = experiment!.end;
+                new_state.aggregated[exp_uuid].experiment!.nbEvents += experiment!.nbEvents;
+                if (experiment!.indexingStatus === `RUNNING`)
+                    new_state.aggregated[exp_uuid].experiment!.indexingStatus = `RUNNING`;
+                new_state.aggregated[exp_uuid].experiment!.traces.concat(experiment!.traces);
             }
         }
         return new_state;
