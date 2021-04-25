@@ -27,10 +27,12 @@ export class MaintainerManager<T, V extends string | number> {
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
     public dispatch(type: V, data?: any): void {
         const maintainers = type !== `preware` ? this._maintainers[type] || [] : [];
+        let current_state = this._store.getState();
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         for (const maintainer of [...this._maintainers.preware!, ...maintainers]) {
-            const new_state = maintainer(this._store.getState(), data, type);
-            if (!Object.is(new_state, this._store.getState())) this._store.updateStore(new_state);
+            const new_state = maintainer(current_state, data, type);
+            if (!Object.is(new_state, current_state)) current_state = new_state;
         }
+        this._store.updateStore(current_state);
     }
 }
