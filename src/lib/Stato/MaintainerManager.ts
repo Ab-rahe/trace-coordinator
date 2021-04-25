@@ -8,6 +8,14 @@ export type Maintainer<T, V extends string | number> = {
     [t in V]?: MaintainerCallback<T, V>;
 };
 
+// TODO: submit issue on typescript for this usecase the compiler unable to know the type if T passed in is generic
+// type RequireOne<T, K extends keyof T> = {
+//     [X in Exclude<keyof T, K>]?: T[X];
+// } &
+//     {
+//         [P in K]-?: T[P];
+//     };
+
 export class MaintainerManager<T, V extends string | number> {
     private readonly _maintainers;
     public constructor(private readonly _store: Store<T>) {
@@ -19,6 +27,7 @@ export class MaintainerManager<T, V extends string | number> {
     public register(m: Maintainer<T, V>): void {
         Object.keysIfValue(m).forEach((event_type) => {
             if (!this._maintainers[event_type]) this._maintainers[event_type] = [];
+            // m[event_type] cannot be null since keysIfValue only return key if (m[key])
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             this._maintainers[event_type].push(m[event_type]!);
         });
