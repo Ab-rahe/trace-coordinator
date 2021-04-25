@@ -19,12 +19,12 @@ server.post(`/admin/save`, async () => {
         if (err) {
             throw err;
         }
-        console.log(`State are saved.`);
     });
+    return `State saved successfully`;
 });
 server.post(`/admin/fake`, async () => {
-    trace_coordinator.createFakeTestCaseTraceServer();
-    return;
+    await trace_coordinator.createFakeTestCaseTraceServer();
+    return `done`;
 });
 //////////////////////////////////////////////////
 

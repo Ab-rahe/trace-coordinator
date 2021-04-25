@@ -6,5 +6,5 @@ or `yarn dev` to run dev server \
 
 ## special endpoints
 
--   **/admin/fake**: **_ATTENTION DANGEROUS, this delete all .tracecompass\* workspace on machine, backup them if needed_**, inititate fake experiments in trace servers, provide that the servers are already running. Modify hardcoded paths in `core/TraceCoordinator.ts`
+-   **/admin/fake**: inititate fake experiments in trace servers, provide that the servers are already running. Modify hardcoded paths in `core/TraceCoordinator.ts`
 -   **/admin/save**: save entire state to `state.json`

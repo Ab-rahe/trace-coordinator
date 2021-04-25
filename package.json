@@ -5,6 +5,7 @@
   "license": "Apache License 2.0",
   "scripts": {
     "build": "rimraf bin && tsc",
+    "clean-servers": "rimraf ~/.tracecompass*",
     "start": "NODE_PATH=bin node bin/index.js",
     "dev": "NODE_PATH=src ts-node-dev src/index.ts",
     "lint": "eslint '*/**/*.{js,ts}' --quiet --fix"

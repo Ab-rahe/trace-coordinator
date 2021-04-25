@@ -3,9 +3,6 @@ import { TspClientFactory } from "./TspClientFactory";
 import { RestError } from "lib/RestError";
 import { StateTimegraph } from "configs/state.default";
 
-import rimraf from "rimraf";
-import os from "os";
-
 class TraceCoordinator {
     private readonly _trace_servers: { [adddress: string]: TspClient };
     private static readonly _instance = new TraceCoordinator();
@@ -27,12 +24,11 @@ class TraceCoordinator {
     }
 
     public addServer(address: string) {
-        this._trace_servers[address] = TspClientFactory.createTspClient(address);
+        this._trace_servers[address] = TspClientFactory.createTspClient(address + `/tsp/api`);
     }
 
     // TODO: Debug purpose only
     public async createFakeTestCaseTraceServer() {
-        rimraf(`${os.homedir()}/.tracecompass*`, (e) => console.error(e));
         const traces_path = [
             `/home/ubuntu/baby/Dropbox/dev/theia-tracecompass/TraceCompassTutorialTraces/103-compare-package-managers/apt`,
             `/home/ubuntu/baby/Dropbox/dev/theia-tracecompass/TraceCompassTutorialTraces/103-compare-package-managers/pacman`,
@@ -42,10 +38,12 @@ class TraceCoordinator {
         let i = 0,
             j = 0;
         const exp_uuid = `this-is-a-unique-id`;
-        for (const server of Object.values(this._trace_servers)) {
+        for (const [address, server] of Object.entries(this._trace_servers)) {
             if (i >= traces_path.length - 1) i = 0;
+            console.log(`create fake for traceserver ${address}`);
             const response = await server.openTrace(new Query({ uri: traces_path[i], name: traces_path[i] }));
-            server.createExperiment(
+            console.log(response);
+            await server.createExperiment(
                 new Query({ name: `experiment ${j}`, traces: [`${response.getModel().UUID}`], uuid: exp_uuid }),
             );
             i++;
